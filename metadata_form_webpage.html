@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Metadata Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+    input, textarea { width: 100%; padding: 8px; margin: 6px 0 12px; }
+    button { padding: 10px 15px; cursor: pointer; }
+    .output { border: 1px solid #ccc; padding: 10px; margin-top: 15px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>ฟอร์มกรอก Metadata</h2>
+
+  <h3>Publisher</h3>
+  <label>ชื่อโรงภาพยนตร์</label>
+  <input id="cinema">
+  <label>สาขา</label>
+  <input id="branch">
+
+  <h3>Title</h3>
+  <label>ชื่อภาพยนตร์</label>
+  <input id="title">
+
+  <h3>Date</h3>
+  <label>วันที่ (YYYY-MM-DD)</label>
+  <input id="date_only" placeholder="2026-04-21">
+  <label>เวลา (HH:MM)</label>
+  <input id="time_only" placeholder="19:30">
+
+  <h3>Description</h3>
+  <label>หมายเลขโรงภาพยนตร์</label>
+  <input id="theater">
+  <label>เลขที่นั่ง</label>
+  <input id="seat">
+  <label>ราคาตั๋ว</label>
+  <input id="price">
+
+  <h3>Other Metadata</h3>
+  <p><strong>Format:</strong> image/tiff (fixed)</p>
+
+  <p><strong>Rights:</strong> Copyright status unknown. Physical item owned by collector. Digital image provided for research and educational purposes. (fixed)</p>
+
+  <label>Identifier (รหัสตั๋ว)</label>
+  <input id="identifier">
+
+  <label>ชื่อไฟล์ (สำหรับ ExifTool)</label>
+  <input id="filename" placeholder="example.tiff">
+
+  <button onclick="generate()">Generate</button>
+
+  <h3>1. ExifTool Command</h3>
+  <div id="exif" class="output"></div>
+
+  <h3>2. Omeka Text (Copy/Paste)</h3>
+  <div id="omeka" class="output"></div>
+
+<script>
+function generate() {
+  const cinema = document.getElementById('cinema').value;
+  const branch = document.getElementById('branch').value;
+  const publisher = `${cinema} - ${branch}`;
+
+  const title = document.getElementById('title').value;
+
+  const dateOnly = document.getElementById('date_only').value;
+  const timeOnly = document.getElementById('time_only').value;
+  const date = `${dateOnly} ${timeOnly}`;
+
+  const theater = document.getElementById('theater').value;
+  const seat = document.getElementById('seat').value;
+  const price = document.getElementById('price').value;
+  const description = `Theater: ${theater}, Seat: ${seat}, Price: ${price}`;
+
+  const format = "image/tiff";
+  const rights = "Copyright status unknown. Physical item owned by collector. Digital image provided for research and educational purposes.";
+
+  const identifier = document.getElementById('identifier').value;
+  const filename = document.getElementById('filename').value;
+
+  const exif = `exiftool -Title="${title}" -Creator="${publisher}" -DateTimeOriginal="${date}" -Description="${description}" -Format="${format}" -Identifier="${identifier}" -Rights="${rights}" "${filename}"`;
+
+  const omeka =
+`Publisher:\n${publisher}\n\nTitle:\n${title}\n\nDate:\n${date}\n\nDescription:\n${description}\n\nFormat:\n${format}\n\nIdentifier:\n${identifier}\n\nRights:\n${rights}`;
+
+  document.getElementById('exif').innerText = exif;
+  document.getElementById('omeka').innerText = omeka;
+}
+</script>
+
+</body>
+</html>
